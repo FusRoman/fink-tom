@@ -1,0 +1,8 @@
+name: fink_tom_env
+dependencies:
+- python==3.10.13
+- gunicorn
+- pip
+- pip:
+  - tomtoolkit
+  - psycopg2-binary

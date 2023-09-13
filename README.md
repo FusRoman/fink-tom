@@ -1,1 +1,23 @@
 # fink-tom
+
+### DEV mode
+
+build docker dev image using docker-compose
+```bash
+docker-compose build
+```
+
+run the container
+```bash 
+docker-compose up -d
+```
+
+access to the TOM database
+```bash
+docker-compose exec db psql --username=fink_tom_default --dbname=fink_tom_dev
+```
+
+create a new user in dev mode
+```bash
+docker-compose exec web conda run --no-capture-output -n fink_tom_env python fink_tom/manage.py createsuperuser
+```
