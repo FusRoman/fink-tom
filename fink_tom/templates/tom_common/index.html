@@ -1,0 +1,28 @@
+{% extends 'tom_common/base.html' %}
+{% load static targets_extras observation_extras dataproduct_extras tom_common_extras %}
+{% block title %}Home{% endblock %}
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <h2 class="text-center">Welcome to the Fink-TOM.</h2>
+        <p class="text-center"><img src="{% static 'img/Fink_PrimaryLogo_WEB.png' %}" class="img-fluid mx-auto"></p>
+        <ul>
+            <li>The official <a href="https://fink-broker.org/">Fink website</a>.</li>
+        </ul>
+    </div>
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                Latest Comments
+            </div>
+            {% recent_comments %}
+        </div>
+        <br />
+        <div class="card">
+            <div class="card-header">
+                Latest Targets
+            </div>
+            {% recent_targets %}
+        </div>
+    </div>
+    {% endblock %}
