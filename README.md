@@ -12,6 +12,11 @@ run the container
 docker-compose up -d
 ```
 
+make django migration
+```bash
+docker-compose exec web conda run --no-capture-output -n fink_tom_env python manage.py migrate
+```
+
 access to the TOM database
 ```bash
 docker-compose exec db psql --username=fink_tom_default --dbname=fink_tom_dev
