@@ -1,0 +1,33 @@
+FROM ubuntu:22.04
+
+# SHELL [ "/bin/bash", "--login", "-c"]
+
+ENV FINK_TOM_HOME /home/tom_dir
+
+WORKDIR $FINK_TOM_HOME
+COPY . fink-tom
+WORKDIR fink-tom
+
+ENV PATH=${USRLIBS}/miniconda/bin:/usr/local/bin:${PATH}
+
+# Install system build dependencies
+RUN apt-get update \
+    && apt-get -y install git wget \
+    && apt-get -y install build-essential
+
+# install python and the dependencies
+RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86_64.sh -O ~/miniconda.sh \
+    && bash ~/miniconda.sh -b -p ${USRLIBS}/miniconda
+
+RUN echo "\n" && ls && echo "\n" && pwd && echo "\n"
+RUN conda env create -f environment.yml
+
+# Make RUN commands use the new environment:
+SHELL ["conda", "run", "-n", "fink_tom_env", "/bin/bash", "-c"]
+RUN ./fink_tom/manage.py migrate
+
+RUN mkdir -pv /var/{log,run}/gunicorn/
+RUN chmod 777 /var/{log,run}/gunicorn/
+
+WORKDIR fink_tom
+ENTRYPOINT ["conda", "run", "--no-capture-output", "-n", "fink_tom_env", "gunicorn", "-c", "config/gunicorn/dev.py"]
