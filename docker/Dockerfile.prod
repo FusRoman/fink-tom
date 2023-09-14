@@ -21,7 +21,9 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
 
 RUN conda env create -f environment.yml
 
+RUN mkdir -pv /var/log/gunicorn/ /var/run/gunicorn/
 RUN chown -R app:app $FINK_TOM_HOME
+RUN chown -cR app:app /var/log/gunicorn/ /var/run/gunicorn/
 
 # change to the app user
 USER app

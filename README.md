@@ -39,3 +39,8 @@ collect static files
 ```bash
 docker-compose exec web conda run --no-capture-output -n fink_tom_env python manage.py collectstatic --no-input --clear
 ```
+
+print logs
+```bash
+docker-compose -f docker-compose.prod.yml logs -f
+```
