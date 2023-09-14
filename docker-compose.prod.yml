@@ -5,6 +5,7 @@ services:
     build:
       context: ./
       dockerfile: ./docker/Dockerfile.prod
+    image: fusroman/web_image:latest
     command: conda run --no-capture-output -n fink_tom_env gunicorn -c config/gunicorn/dev.py
     volumes:
       - static_volume:/home/tom_dir/fink-tom/fink_tom/staticfiles
@@ -24,6 +25,7 @@ services:
 
   nginx:
     build: ./nginx
+    image: fusroman/nginx_image:latest
     volumes:
       - static_volume:/home/tom_dir/fink-tom/fink_tom/staticfiles
     ports:
