@@ -33,7 +33,7 @@ ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS").split(" ")
 
 # Application definition
 
-TOM_NAME = 'TOM Toolkit'
+TOM_NAME = 'Fink-TOM'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
