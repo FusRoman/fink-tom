@@ -27,4 +27,5 @@ RUN chown -R app:app $FINK_TOM_HOME
 USER app
 
 WORKDIR fink_tom
+RUN mkdir staticfiles
 ENTRYPOINT ["./../docker/entrypoint_prod.sh"]
