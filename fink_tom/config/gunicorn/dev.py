@@ -1,4 +1,4 @@
-"""Gunicorn *development* config file"""
+"""Gunicorn config file"""
 
 # Django WSGI application path in pattern MODULE_NAME:VARIABLE_NAME
 wsgi_app = "fink_tom.wsgi:application"
@@ -7,13 +7,13 @@ loglevel = "debug"
 # The number of worker processes for handling requests
 workers = 2
 # The socket to bind
-bind = "fink.tom:8000"
+bind = "0.0.0.0:8000"
 # Restart workers when code changes (development only!)
-reload = True
+reload = False
 # Write access and error info to /var/log
 accesslog = errorlog = "/var/log/gunicorn/dev.log"
 # Redirect stdout/stderr to log file
-capture_output = False
+capture_output = True
 # PID file so you can easily fetch process ID
 pidfile = "/var/run/gunicorn/dev.pid"
 # Daemonize the Gunicorn process (detach & enter background)
