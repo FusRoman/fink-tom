@@ -6,3 +6,5 @@ dependencies:
 - pip:
   - tomtoolkit
   - psycopg2-binary
+  - tom-alertstreams
+  - fink-client

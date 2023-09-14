@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'tom_catalogs',
     'tom_observations',
     'tom_dataproducts',
+    'tom_alertstreams'
 ]
 
 SITE_ID = 1
@@ -326,6 +327,29 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100
 }
+
+
+# Streams
+# https://github.com/TOMToolkit/tom-alertstreams
+
+ALERT_STREAMS = [
+    {
+        'ACTIVE': True,
+        'NAME': 'fink_tom.fink_streams.fink_mm_alertstreams.FinkMMAlertStream',
+        # The keys of the OPTIONS dictionary become (lower-case) properties of the AlertStream instance.
+        'OPTIONS': {
+            # see https://github.com/nasa-gcn/gcn-kafka-python#to-use for configuration details.
+            'FINK_STREAM_CLIENT_ID': os.getenv('USERNAME', None),
+            'FINK_STREAM_SERVERS': os.getenv('SERVERS', None),
+            'FINK_STREAM_GROUP_ID': os.getenv('GROUP_ID', None),
+            'NUMALERTS' : os.getenv('NUMALERTS', None),
+            'MAXTIMEOUT' : os.getenv('MAXTIMEOUT', None),
+            'TOPIC_HANDLERS': {
+                'fink_grb_bronze': 'fink_tom.fink_streams.fink_mm_alertstreams.alert_logger',
+            },
+        },
+    }
+]
 
 try:
     from local_settings import * # noqa
