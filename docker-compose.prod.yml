@@ -3,7 +3,7 @@ services:
     build:
       context: ./
       dockerfile: ./docker/Dockerfile.prod
-    command: conda run --no-capture-output -n fink_tom_env gunicorn fink_tom.wsgi:application --bind 0.0.0.0:8000
+    command: conda run --no-capture-output -n fink_tom_env gunicorn -c config/gunicorn/dev.py
     volumes:
       - static_volume:/home/tom_dir/fink-tom/fink_tom/staticfiles
     expose:
