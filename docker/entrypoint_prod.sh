@@ -12,4 +12,6 @@ then
     echo "PostgreSQL started"
 fi
 
+conda run -n fink_tom_env python fink_tom/manage.py readstreams
+
 exec "$@"
