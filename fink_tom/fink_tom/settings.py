@@ -59,6 +59,7 @@ INSTALLED_APPS = [
     'tom_catalogs',
     'tom_observations',
     'tom_dataproducts',
+    'tom_alertstreams'
 ]
 
 SITE_ID = 1
@@ -171,18 +172,38 @@ MEDIA_URL = '/data/'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'console': {
+            'format': '%(asctime)s %(name)-12s %(levelname)-8s %(message)s',
+        },
+    },
     'handlers': {
         'console': {
             'class': 'logging.StreamHandler',
-        }
+            'formatter': 'console',
+        },
+        "file": {
+            "level": "DEBUG",
+            "class": "logging.FileHandler",
+            'formatter': 'console',
+            "filename": "/home/tom_dir/fink_tom_debug.log",
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        # 'level': 'WARNING',
+        'level': 'INFO',
+        # 'level': 'DEBUG',
     },
     'loggers': {
-        '': {
+        'django': {
             'handlers': ['console'],
-            'level': 'INFO'
-        }
-    }
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
 }
+logging.config.dictConfig(LOGGING)
 
 # Caching
 # https://docs.djangoproject.com/en/dev/topics/cache/#filesystem-caching
@@ -253,7 +274,6 @@ TOM_ALERT_CLASSES = [
     'tom_alerts.brokers.lasair.LasairBroker',
     'tom_alerts.brokers.scout.ScoutBroker',
     'tom_alerts.brokers.tns.TNSBroker',
-    'tom_alerts.brokers.fink.FinkBroker',
 ]
 
 BROKERS = {
@@ -326,6 +346,30 @@ REST_FRAMEWORK = {
     'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
     'PAGE_SIZE': 100
 }
+
+
+# Streams
+# https://github.com/TOMToolkit/tom-alertstreams
+
+ALERT_STREAMS = [
+    {
+        'ACTIVE': True,
+        'NAME': 'fink_streams.fink_mm_alertstreams.FinkMMAlertStream',
+        # The keys of the OPTIONS dictionary become (lower-case) properties of the AlertStream instance.
+        'OPTIONS': {
+            # see https://github.com/nasa-gcn/gcn-kafka-python#to-use for configuration details.
+            'FINK_STREAM_CLIENT_ID': os.getenv('USERNAME', None),
+            'FINK_STREAM_SERVERS': os.getenv('SERVERS', None),
+            'FINK_STREAM_GROUP_ID': os.getenv('GROUP_ID', None),
+            'NUMALERTS' : os.getenv('NUMALERTS', None),
+            'MAXTIMEOUT' : os.getenv('MAXTIMEOUT', None),
+            'TOPIC_HANDLERS': {
+                'fink_grb_bronze': 'fink_streams.fink_mm_alertstreams.alert_logger',
+                'fink_sn_candidates_ztf': 'fink_streams.fink_mm_alertstreams.alert_logger'
+            },
+        },
+    }
+]
 
 try:
     from local_settings import * # noqa
