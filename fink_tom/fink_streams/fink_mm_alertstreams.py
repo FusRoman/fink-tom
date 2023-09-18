@@ -60,10 +60,6 @@ def alert_logger(finkmm_stream, topic, alert):
     for cimpl.Message details.
     """
     logger.info(f'gcn.alert_logger alert:\n\t{alert["objectId"]}\n\t{alert["candidate"]["jd"]}\n\t{alert["candidate"]["ra"]}\n\t{alert["candidate"]["dec"]}')
-    
-    t_search_manager = TargetMatchManager()
-    r_search = t_search_manager.check_for_fuzzy_match(alert["objectId"])
-    print(r_search)
 
     target_list = finkmm_stream.target_list[topic]
     t = Target(
