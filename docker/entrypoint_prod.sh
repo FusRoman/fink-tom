@@ -12,7 +12,8 @@ then
     echo "PostgreSQL started"
 fi
 
-docker-compose exec web conda run --no-capture-output -n fink_tom_env python manage.py collectstatic --no-input --clear
+conda run --no-capture-output -n fink_tom_env python manage.py migrate
+conda run --no-capture-output -n fink_tom_env python manage.py collectstatic --no-input --clear
 nohup conda run -n fink_tom_env python manage.py readstreams > readstreams.log 2>&1 &
 
 exec "$@"
