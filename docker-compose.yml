@@ -11,6 +11,7 @@ services:
     env_file:
       - ./env_file/.env.dev
       - ./env_file/.env.no_push.fink
+      - ./env_file/.env.dev.mail
     depends_on:
       - db
 
