@@ -8,3 +8,4 @@ dependencies:
   - psycopg2-binary
   - tom-alertstreams
   - fink-client
+  - tom_registration
