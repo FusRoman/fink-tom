@@ -20,6 +20,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
     && bash ~/miniconda.sh -b -p ${USRLIBS}/miniconda
 
 RUN conda env create -f environment.yml
+RUN conda run --no-capture-output -n fink_tom_env pip install tom_fink --no-deps
 
 RUN mkdir -pv /var/log/gunicorn/ /var/run/gunicorn/
 RUN chown -R app:app $FINK_TOM_HOME

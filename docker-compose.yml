@@ -5,7 +5,10 @@ services:
     build:
       context: ./
       dockerfile: ./docker/Dockerfile.dev
-    command: conda run -n fink_tom_env fink_tom/manage.py runserver 0.0.0.0:8000
+    command: tail -F anything
+    volumes:
+      - ./:/home/local
+    restart: always
     ports:
       - 8000:8000
     env_file:

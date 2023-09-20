@@ -18,6 +18,11 @@ don't forget to run migration of there is any modification on the database
 docker-compose exec web conda run --no-capture-output -n fink_tom_env python manage.py migrate
 ```
 
+launch the dev server
+```bash
+docker-compose exec web conda run -n fink_tom_env fink_tom/manage.py runserver 0.0.0.0:8000
+```
+
 access to the TOM database
 ```bash
 docker-compose exec db psql --username=fink_tom_default --dbname=fink_tom_dev
