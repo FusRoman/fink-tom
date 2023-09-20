@@ -1,7 +1,5 @@
 FROM ubuntu:22.04
 
-# SHELL [ "/bin/bash", "--login", "-c"]
-
 ENV FINK_TOM_HOME /home/tom_dir
 
 WORKDIR $FINK_TOM_HOME

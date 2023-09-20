@@ -11,6 +11,7 @@ services:
     env_file:
       - ./env_file/.env.dev
       - ./env_file/.env.no_push.fink
+      - ./env_file/.env.dev.mail
     depends_on:
       - db
 
@@ -22,6 +23,15 @@ services:
       - POSTGRES_USER=fink_tom_default
       - POSTGRES_PASSWORD=secret
       - POSTGRES_DB=fink_tom_dev
+
+  smtp-server:
+    image: mailhog/mailhog
+    expose:
+      - 1025
+      - 8025
+    ports:
+      - '1025:1025'
+      - '8025:8025'
 
 volumes:
   postgres_data:

@@ -59,7 +59,8 @@ INSTALLED_APPS = [
     'tom_catalogs',
     'tom_observations',
     'tom_dataproducts',
-    'tom_alertstreams'
+    'tom_alertstreams',
+    'tom_registration'
 ]
 
 SITE_ID = 1
@@ -75,6 +76,7 @@ MIDDLEWARE = [
     'tom_common.middleware.Raise403Middleware',
     'tom_common.middleware.ExternalServiceMiddleware',
     'tom_common.middleware.AuthStrategyMiddleware',
+    'tom_registration.middleware.RedirectAuthenticatedUsersFromRegisterMiddleware',
 ]
 
 ROOT_URLCONF = 'fink_tom.urls'
@@ -139,7 +141,7 @@ LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
-    'django.contrib.auth.backends.ModelBackend',
+    'django.contrib.auth.backends.AllowAllUsersModelBackend',
     'guardian.backends.ObjectPermissionBackend',
 )
 
@@ -317,6 +319,23 @@ AUTH_STRATEGY = 'READ_ONLY'
 # objects to be seen by everyone. Setting it to False will allow users to specify which groups can access
 # `ObservationRecord`, `DataProduct`, and `ReducedDatum` objects.
 TARGET_PERMISSIONS_ONLY = True
+
+
+TOM_REGISTRATION = {
+    'REGISTRATION_AUTHENTICATION_BACKEND': 'django.contrib.auth.backends.AllowAllUsersModelBackend',
+    'REGISTRATION_REDIRECT_PATTERN': 'home',
+    'SEND_APPROVAL_EMAILS': True
+}
+
+
+# Define email settings for registration system
+EMAIL_BACKEND = os.environ.get("EMAIL_BACKEND")
+EMAIL_HOST = os.environ.get("EMAIL_HOST")
+EMAIL_PORT = os.environ.get("EMAIL_PORT")
+EMAIL_USE_TLS = os.environ.get("EMAIL_USE_TLS")
+EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD")
+
 
 # URLs that should be allowed access even with AUTH_STRATEGY = LOCKED
 # for example: OPEN_URLS = ['/', '/about']
