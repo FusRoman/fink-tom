@@ -384,8 +384,9 @@ ALERT_STREAMS = [
             'NUMALERTS' : os.getenv('NUMALERTS', None),
             'MAXTIMEOUT' : os.getenv('MAXTIMEOUT', None),
             'TOPIC_HANDLERS': {
-                'fink_grb_bronze': 'fink_streams.fink_mm_alertstreams.alert_logger',
-                'fink_sn_candidates_ztf': 'fink_streams.fink_mm_alertstreams.alert_logger'
+                'fink_grb_bronze': 'fink_streams.fink_mm_alertstreams.mm_alert_processor',
+                'fink_sn_candidates_ztf': 'fink_streams.fink_mm_alertstreams.ztf_alert_processor',
+                'fink_gw_bronze': 'fink_streams.fink_mm_alertstreams.mm_alert_processor'
             },
         },
     }

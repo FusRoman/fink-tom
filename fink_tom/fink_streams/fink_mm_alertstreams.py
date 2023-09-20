@@ -4,6 +4,9 @@ from fink_client.consumer import AlertConsumer
 from tom_targets.models import Target, TargetMatchManager, TargetList
 from psycopg2.errors import UniqueViolation
 
+from astropy.coordinates import SkyCoord
+from astropy.time import Time
+
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
@@ -53,7 +56,7 @@ class FinkMMAlertStream(AlertStream):
         consumer.close()
 
 
-def alert_logger(finkmm_stream, topic, alert):
+def ztf_alert_processor(finkmm_stream, topic, alert):
     """Example alert handler for GCN Classic over Kafka
 
     This alert handler simply logs the topic and value of the cimpl.Message instance.
@@ -61,7 +64,7 @@ def alert_logger(finkmm_stream, topic, alert):
     See https://docs.confluent.io/4.1.1/clients/confluent-kafka-python/index.html#message
     for cimpl.Message details.
     """
-    logger.info(f'gcn.alert_logger alert:\n\t{alert["objectId"]}\n\t{alert["candidate"]["jd"]}\n\t{alert["candidate"]["ra"]}\n\t{alert["candidate"]["dec"]}')
+    logger.info(f'fink_mm_alertstreams.ztf_alert_processor alert:\n\t{alert["objectId"]}\n\t{alert["candidate"]["jd"]}\n\t{alert["candidate"]["ra"]}\n\t{alert["candidate"]["dec"]}')
 
     target_list = finkmm_stream.target_list[topic]
     t = Target(
@@ -81,5 +84,38 @@ def alert_logger(finkmm_stream, topic, alert):
     except Exception:
         logger.error("error when trying to save new alerts in the db", exc_info=1)
 
+
+def mm_alert_processor(finkmm_stream, topic, alert):
+    logger.info(f'fink_mm_alertstreams.mm_alert_processor alert:\n\t{alert["objectId"]}\n\t{alert["triggerId"]}')
+
+    target_list = finkmm_stream.target_list[topic]
+    t = Target(
+        name=alert["objectId"],
+        type='SIDEREAL',
+        ra=alert["ztf_ra"],
+        dec=alert["ztf_dec"],
+        epoch=alert["jd"]
+    )
+
+    logger.info("SAVE TARGET")
+    try:
+        gcn_sep = SkyCoord(alert["ztf_ra"], alert["ztf_dec"]).separation(SkyCoord(alert["gcn_ra"], alert["gcn_dec"]))
+        gcn_time_jd = Time(alert["triggerTimeUTC"]).jd
+        t.save(extras={
+            'triggerId': alert["triggerId"],
+            'gcn_status': alert["gcn_status"],
+            'gcn_ra': alert["gcn_ra"],
+            'gcn_dec': alert["gcn_dec"],
+            'distance to the gcn': gcn_sep,
+            'gcn_loc_error': alert["gcn_loc_error"],
+            'triggerTimeUTC': alert["triggerTimeUTC"],
+            'delta_time': alert["jd"] - gcn_time_jd
+        })
+
+        target_list.targets.add(t)
+    except UniqueViolation:
+        logger.error(f"Target {t} already in the database")
+    except Exception:
+        logger.error("error when trying to save new alerts in the db", exc_info=1)
 
 
