@@ -1,8 +1,10 @@
 from tom_alertstreams.alertstreams.alertstream import AlertStream
 import logging
 from fink_client.consumer import AlertConsumer
-from tom_targets.models import Target, TargetMatchManager, TargetList
+from tom_targets.models import Target, TargetList
 from psycopg2.errors import UniqueViolation
+from guardian.shortcuts import assign_perm
+from django.contrib.auth.models import Group
 
 from astropy.coordinates import SkyCoord
 from astropy.time import Time
@@ -21,8 +23,10 @@ class FinkMMAlertStream(AlertStream):
         self.all_topics = list(self.topic_handlers.keys())
 
         self.target_list = {}
+        public_group, _ = Group.objects.get_or_create(name="Public")
         for topic in self.all_topics:
             tl, is_created = TargetList.objects.get_or_create(name=topic)
+            assign_perm("tom_targets.view_targetlist", public_group, tl)
             self.target_list[topic] = tl
 
     def listen(self):
@@ -66,6 +70,7 @@ def ztf_alert_processor(finkmm_stream, topic, alert):
     """
     logger.info(f'fink_mm_alertstreams.ztf_alert_processor alert:\n\t{alert["objectId"]}\n\t{alert["candidate"]["jd"]}\n\t{alert["candidate"]["ra"]}\n\t{alert["candidate"]["dec"]}')
 
+    public_group, _ = Group.objects.get_or_create(name="Public")
     target_list = finkmm_stream.target_list[topic]
     t = Target(
         name=alert["objectId"],
@@ -79,6 +84,7 @@ def ztf_alert_processor(finkmm_stream, topic, alert):
     try:
         t.save()
         target_list.targets.add(t)
+        assign_perm("tom_targets.view_target", public_group, t)
     except UniqueViolation:
         logger.error(f"Target {t} already in the database")
     except Exception:
@@ -88,6 +94,7 @@ def ztf_alert_processor(finkmm_stream, topic, alert):
 def mm_alert_processor(finkmm_stream, topic, alert):
     logger.info(f'fink_mm_alertstreams.mm_alert_processor alert:\n\t{alert["objectId"]}\n\t{alert["triggerId"]}')
 
+    public_group, _ = Group.objects.get_or_create(name="Public")
     target_list = finkmm_stream.target_list[topic]
     t = Target(
         name=alert["objectId"],
@@ -113,6 +120,7 @@ def mm_alert_processor(finkmm_stream, topic, alert):
         })
 
         target_list.targets.add(t)
+        assign_perm("tom_targets.view_target", public_group, t)
     except UniqueViolation:
         logger.error(f"Target {t} already in the database")
     except Exception:
