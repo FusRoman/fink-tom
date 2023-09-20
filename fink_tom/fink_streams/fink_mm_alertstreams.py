@@ -16,9 +16,11 @@ class FinkMMAlertStream(AlertStream):
         super().__init__(*args, **kwargs)
 
         self.all_topics = list(self.topic_handlers.keys())
-        self.target_list = {topic : TargetList(name=topic) for topic in self.all_topics}
-        for tl in self.target_list.values():
-            tl.save()
+
+        self.target_list = {}
+        for topic in self.all_topics:
+            tl, is_created = TargetList.objects.get_or_create(name=topic)
+            self.target_list[topic] = tl
 
     def listen(self):
         super().listen()
