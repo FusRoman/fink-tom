@@ -15,5 +15,6 @@ fi
 
 conda run --no-capture-output -n fink_tom_env python fink_tom/manage.py flush --no-input
 conda run --no-capture-output -n fink_tom_env python fink_tom/manage.py migrate
+nohup conda run --no-capture-output -n fink_tom_env python fink_tom/manage.py runserver 0.0.0.0:8000 &
 
 exec "$@"
