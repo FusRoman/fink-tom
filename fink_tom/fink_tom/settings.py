@@ -263,19 +263,15 @@ DATA_PROCESSORS = {
 }
 
 TOM_FACILITY_CLASSES = [
-    'tom_observations.facilities.lco.LCOFacility',
-    'tom_observations.facilities.gemini.GEMFacility',
-    'tom_observations.facilities.soar.SOARFacility',
-    'tom_observations.facilities.lt.LTFacility'
+    'gvom_observatories.colibri.ColibriFacility',
+    'gvom_observatories.xinglong.XinglongFacility',
+    'gvom_observatories.ohp.OHPFacility',
+    'gvom_observatories.jilin.JilinFacility',
+    'gvom_observatories.orm.ORMFacility',
+    'gvom_observatories.maidanak.MaidanakFacility'
 ]
 
 TOM_ALERT_CLASSES = [
-    'tom_alerts.brokers.alerce.ALeRCEBroker',
-    'tom_alerts.brokers.antares.ANTARESBroker',
-    'tom_alerts.brokers.gaia.GaiaBroker',
-    'tom_alerts.brokers.lasair.LasairBroker',
-    'tom_alerts.brokers.scout.ScoutBroker',
-    'tom_alerts.brokers.tns.TNSBroker',
     'tom_fink.fink.FinkBroker',
 ]
 
