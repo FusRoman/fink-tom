@@ -3,6 +3,7 @@ import logging
 from fink_client.consumer import AlertConsumer
 from tom_targets.models import Target, TargetList
 from psycopg2.errors import UniqueViolation
+from django.db.utils import IntegrityError
 from guardian.shortcuts import assign_perm
 from django.contrib.auth.models import Group
 
@@ -97,7 +98,7 @@ def mm_alert_processor(finkmm_stream, topic, alert):
     public_group, _ = Group.objects.get_or_create(name="Public")
     target_list = finkmm_stream.target_list[topic]
     t = Target(
-        name=alert["objectId"],
+        name=alert["objectId"] + "_" + alert["triggerId"],
         type='SIDEREAL',
         ra=alert["ztf_ra"],
         dec=alert["ztf_dec"],
@@ -106,22 +107,24 @@ def mm_alert_processor(finkmm_stream, topic, alert):
 
     logger.info("SAVE TARGET")
     try:
-        gcn_sep = SkyCoord(alert["ztf_ra"], alert["ztf_dec"]).separation(SkyCoord(alert["gcn_ra"], alert["gcn_dec"]))
+        gcn_sep = SkyCoord(alert["ztf_ra"], alert["ztf_dec"], unit="deg").separation(SkyCoord(alert["gcn_ra"], alert["gcn_dec"], unit="deg"))
         gcn_time_jd = Time(alert["triggerTimeUTC"]).jd
         t.save(extras={
             'triggerId': alert["triggerId"],
             'gcn_status': alert["gcn_status"],
             'gcn_ra': alert["gcn_ra"],
             'gcn_dec': alert["gcn_dec"],
-            'distance to the gcn': gcn_sep,
-            'gcn_loc_error': alert["gcn_loc_error"],
+            'distance to the gcn (degree)': gcn_sep.deg,
+            'gcn_loc_error (in arcmin)': alert["gcn_loc_error"],
             'triggerTimeUTC': alert["triggerTimeUTC"],
-            'delta_time': alert["jd"] - gcn_time_jd
+            'delta_time (in day)': alert["jd"] - gcn_time_jd
         })
 
         target_list.targets.add(t)
         assign_perm("tom_targets.view_target", public_group, t)
     except UniqueViolation:
+        logger.error(f"Target {t} already in the database")
+    except IntegrityError as ue:
         logger.error(f"Target {t} already in the database")
     except Exception:
         logger.error("error when trying to save new alerts in the db", exc_info=1)
