@@ -1,4 +1,6 @@
 from tom_observations.facility import BaseRoboticObservationFacility, BaseRoboticObservationForm
+from astroplan import Observer
+import astropy.units as u
 
 
 class ColibriForm(BaseRoboticObservationForm):
@@ -18,6 +20,13 @@ class ColibriFacility(BaseRoboticObservationFacility):
             'elevation': 2829.9999999997976
         }
     }
+
+    observatory = Observer(
+        longitude=SITES['(OAN) San PedroMártir']['longitude'] * u.deg,
+        latitude=SITES['(OAN) San PedroMártir']['latitude'] * u.deg,
+        elevation=SITES['(OAN) San PedroMártir']['elevation'] * u.m,
+        name=list(SITES.keys())[0],
+    )
 
     def data_products(self, observation_id, product_id=None):
         return []
@@ -46,3 +55,4 @@ class ColibriFacility(BaseRoboticObservationFacility):
     
     def get_observing_sites(self):
         return {}
+

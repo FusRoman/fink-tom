@@ -344,7 +344,14 @@ HOOKS = {
     'data_product_post_upload': 'tom_dataproducts.hooks.data_product_post_upload',
     'data_product_post_save': 'tom_dataproducts.hooks.data_product_post_save',
     'multiple_data_products_post_save': 'tom_dataproducts.hooks.multiple_data_products_post_save',
+    'gvom_start_cadence': 'gvom_cadence.start_cadence_hooks.start'
 }
+
+TOM_CADENCE_STRATEGIES = [
+    'tom_observations.cadence.RetryFailedObservationsStrategy',
+    'tom_observations.cadence.ResumeCadenceAfterFailureStrategy',
+    'gvom_cadence.gvom_cadence.GVOMCadence'
+]
 
 AUTO_THUMBNAILS = False
 
@@ -381,7 +388,7 @@ ALERT_STREAMS = [
             'MAXTIMEOUT' : os.getenv('MAXTIMEOUT', None),
             'TOPIC_HANDLERS': {
                 'fink_grb_bronze': 'fink_streams.fink_mm_alertstreams.mm_alert_processor',
-                # 'fink_sn_candidates_ztf': 'fink_streams.fink_mm_alertstreams.ztf_alert_processor',
+                'fink_sn_candidates_ztf': 'fink_streams.fink_mm_alertstreams.ztf_alert_processor',
                 'fink_gw_bronze': 'fink_streams.fink_mm_alertstreams.mm_alert_processor'
             },
         },

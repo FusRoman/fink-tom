@@ -9,6 +9,12 @@ from django.contrib.auth.models import Group
 
 from astropy.coordinates import SkyCoord
 from astropy.time import Time
+import astropy.units as u
+
+from astroplan import Observer, FixedTarget, is_observable
+from fink_tom.gvom_observatories import gvom_constraints
+from astropy.coordinates import SkyCoord
+from tom_common.hooks import run_hook
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -61,6 +67,103 @@ class FinkMMAlertStream(AlertStream):
         consumer.close()
 
 
+def simu_night_time_interval(ref_obs, ref_date: str):
+    """
+    Compute the list of the date interval during which the observable skies
+    will be crossmatched (TB updated)
+
+    Parameters
+    ----------
+    ref_obs : astroplan.observer.Observer
+        astroplan.observer.Observer object for the Observatory chosen as the 
+        reference observatory.
+    ref_date : str
+        Date of reference to start the simulation.
+    n_days : int
+        Number of simulated days.
+    day_bin : int
+        Day interval between two simulated nights.
+
+    Returns
+    -------
+    None.
+
+    """  
+    # compute the start time of the nearest (compared to the detection time)
+    # night
+    date_start_night = ref_obs.twilight_evening_astronomical(ref_date,
+                                                                which='next')
+    
+    # compute the morning time of the nearest (compared to the detection time)
+    # day
+    date_end_night = ref_obs.twilight_morning_astronomical(ref_date,
+                                                                which='next')
+
+    if isinstance(date_start_night.value,float) and\
+        isinstance(date_end_night.value,float):
+        # If the detection time is within the current night, use the detection
+        # time as a starting date and the end of the night as an ending date
+        if date_start_night < ref_date and date_end_night>ref_date:
+            if date_end_night.jd - date_start_night.jd >0.5:
+                date_start_night = ref_obs.twilight_evening_astronomical(ref_date,
+                                                                        which='next')
+                time_ranges = Time([date_start_night.iso, date_end_night.iso])
+                print('Case 1a')
+            else:
+                time_ranges = Time([ref_date.iso, date_end_night.iso])
+                print('Case 1b')
+        elif date_start_night < ref_date and date_end_night<ref_date:
+            # If the detection time is after the nearest night, use the next
+            # night  starting date as a starting date and the end of the night
+            # as an ending date
+            print('Case 2')
+            date_start_night = ref_obs.twilight_evening_astronomical(ref_date,
+                                                                     which='next')
+            date_end_night = ref_obs.twilight_morning_astronomical(date_start_night,
+                                                                   which='next')
+            time_ranges = Time([date_start_night.iso, date_end_night.iso])
+        # If the detection time is during day time, use the night starting date
+        # as a starting date and the end of the night as an ending date
+        elif date_start_night > ref_date and date_end_night>ref_date:
+            print('Case 3')
+            date_start_night = ref_obs.twilight_evening_astronomical(ref_date,
+                                                                     which='next')
+            date_end_night = ref_obs.twilight_morning_astronomical(date_start_night,
+                                                                   which='next')
+            time_ranges = Time([date_start_night.iso, date_end_night.iso])
+    else:
+        time_ranges = []
+    return time_ranges
+
+
+def target_observability(observatory: Observer, target: Target) -> bool:
+    """
+    Return true of the target are observable at the observatory
+
+    Parameters
+    ----------
+    observatory : Observer
+        the observatory to test
+    target : Target
+        the target to test
+
+    Returns
+    -------
+    bool
+        if True, the target is observable to the observatory
+    """
+    targets = FixedTarget(coord=SkyCoord(ra=target.ra * u.deg,dec=target.dec* u.deg))
+    time_range = simu_night_time_interval(observatory, Time(target.epoch,format='jd'))
+    return is_observable(
+        gvom_constraints, 
+        observatory, 
+        targets,
+        time_range=time_range,
+        time_grid_resolution=1*u.hour
+    )
+
+
+
 def ztf_alert_processor(finkmm_stream, topic, alert):
     """Example alert handler for GCN Classic over Kafka
 
@@ -86,6 +189,7 @@ def ztf_alert_processor(finkmm_stream, topic, alert):
         t.save()
         target_list.targets.add(t)
         assign_perm("tom_targets.view_target", public_group, t)
+        run_hook("gvom_start_cadence", target=t)
     except UniqueViolation:
         logger.error(f"Target {t} already in the database")
     except Exception:
