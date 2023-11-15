@@ -22,4 +22,4 @@ RUN conda run --no-capture-output -n fink_tom_env pip install tom_fink --no-deps
 
 WORKDIR /home/local
 
-ENTRYPOINT ["./docker/entrypoint_dev.sh"]
+ENTRYPOINT ["./Documents/Doctorat/fink-tom/docker/entrypoint_dev.sh"]

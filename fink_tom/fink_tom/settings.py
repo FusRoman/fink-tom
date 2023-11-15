@@ -263,12 +263,12 @@ DATA_PROCESSORS = {
 }
 
 TOM_FACILITY_CLASSES = [
-    'gvom_observatories.colibri.ColibriFacility',
-    'gvom_observatories.xinglong.XinglongFacility',
-    'gvom_observatories.ohp.OHPFacility',
-    'gvom_observatories.jilin.JilinFacility',
-    'gvom_observatories.orm.ORMFacility',
-    'gvom_observatories.maidanak.MaidanakFacility'
+    'fink_tom.colibri.ColibriFacility',
+    'fink_tom.xinglong.XinglongFacility',
+    'fink_tom.ohp.OHPFacility',
+    'fink_tom.jilin.JilinFacility',
+    'fink_tom.orm.ORMFacility',
+    'fink_tom.maidanak.MaidanakFacility'
 ]
 
 TOM_ALERT_CLASSES = [
@@ -344,13 +344,11 @@ HOOKS = {
     'data_product_post_upload': 'tom_dataproducts.hooks.data_product_post_upload',
     'data_product_post_save': 'tom_dataproducts.hooks.data_product_post_save',
     'multiple_data_products_post_save': 'tom_dataproducts.hooks.multiple_data_products_post_save',
-    'gvom_start_cadence': 'gvom_cadence.start_cadence_hooks.start'
+    'gvom_start_cadence': 'fink_tom.start_cadence_hooks.start'
 }
 
 TOM_CADENCE_STRATEGIES = [
-    'tom_observations.cadence.RetryFailedObservationsStrategy',
-    'tom_observations.cadence.ResumeCadenceAfterFailureStrategy',
-    'gvom_cadence.gvom_cadence.GVOMCadence'
+    'fink_tom.gvom_cadence.GVOMCadence'
 ]
 
 AUTO_THUMBNAILS = False
@@ -377,7 +375,7 @@ REST_FRAMEWORK = {
 ALERT_STREAMS = [
     {
         'ACTIVE': True,
-        'NAME': 'fink_streams.fink_mm_alertstreams.FinkMMAlertStream',
+        'NAME': 'fink_tom.fink_mm_alertstreams.FinkMMAlertStream',
         # The keys of the OPTIONS dictionary become (lower-case) properties of the AlertStream instance.
         'OPTIONS': {
             # see https://github.com/nasa-gcn/gcn-kafka-python#to-use for configuration details.
@@ -387,9 +385,9 @@ ALERT_STREAMS = [
             'NUMALERTS' : os.getenv('NUMALERTS', None),
             'MAXTIMEOUT' : os.getenv('MAXTIMEOUT', None),
             'TOPIC_HANDLERS': {
-                'fink_grb_bronze': 'fink_streams.fink_mm_alertstreams.mm_alert_processor',
-                'fink_sn_candidates_ztf': 'fink_streams.fink_mm_alertstreams.ztf_alert_processor',
-                'fink_gw_bronze': 'fink_streams.fink_mm_alertstreams.mm_alert_processor'
+                # 'fink_grb_bronze': 'fink_tom.fink_mm_alertstreams.mm_alert_processor',
+                'fink_sn_candidates_ztf': 'fink_tom.fink_mm_alertstreams.ztf_alert_processor',
+                # 'fink_gw_bronze': 'fink_tom.fink_mm_alertstreams.mm_alert_processor'
             },
         },
     }

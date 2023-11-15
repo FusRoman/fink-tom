@@ -8,9 +8,5 @@ logger.setLevel(logging.DEBUG)
 
 
 class GVOMCadence(CadenceStrategy):
-
     def run(self):
-        
         logger.info("run the cadence ...")
-        obs_record = ObservationRecord.objects.get_or_create(
-        )
