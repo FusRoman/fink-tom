@@ -4,7 +4,7 @@ from tom_observations.facility import (
 )
 from astroplan import Observer
 import astropy.units as u
-from astroplan import AltitudeConstraint, AirmassConstraint, MoonSeparationConstraint
+from astroplan import AltitudeConstraint, AirmassConstraint, MoonSeparationConstraint, AtNightConstraint
 
 
 class ORMForm(BaseRoboticObservationForm):
@@ -35,6 +35,7 @@ class ORMFacility(BaseRoboticObservationFacility):
         AltitudeConstraint(30 * u.deg, 90 * u.deg),
         AirmassConstraint(2),
         MoonSeparationConstraint(min=20 * u.deg),
+        AtNightConstraint.twilight_astronomical()
     ]
 
     def data_products(self, observation_id, product_id=None):

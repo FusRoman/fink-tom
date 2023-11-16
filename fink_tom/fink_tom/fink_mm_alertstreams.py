@@ -96,7 +96,6 @@ def ztf_alert_processor(finkmm_stream, topic, alert):
         dec=alert["candidate"]["dec"],
         epoch=alert["candidate"]["jd"],
     )
-
     logger.info("SAVE TARGET")
     try:
         run_hook("gvom_start_cadence", target=t, target_list=target_list)

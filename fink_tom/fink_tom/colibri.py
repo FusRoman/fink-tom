@@ -4,11 +4,36 @@ from tom_observations.facility import (
 )
 from astroplan import Observer
 import astropy.units as u
-from astroplan import AltitudeConstraint, AirmassConstraint, MoonSeparationConstraint
+from astroplan import (
+    AltitudeConstraint,
+    AirmassConstraint,
+    MoonSeparationConstraint,
+    AtNightConstraint,
+)
+from django import forms
+from crispy_forms.layout import Layout
+import logging
+
+logger = logging.getLogger("django.console")
 
 
 class ColibriForm(BaseRoboticObservationForm):
-    pass
+    exposure_time = forms.IntegerField()
+    exposure_count = forms.IntegerField()
+    filter_choice = forms.MultipleChoiceField(
+        choices=(
+            ("g", "g"),
+            ("r", "r"),
+            ("i", "i"),
+            ("z", "z"),
+            ("y", "y"),
+            ("J", "J"),
+            ("H", "H")
+        )
+    )
+
+    def layout(self):
+        return Layout("exposure_time", "exposure_count", "filter_choice")
 
 
 class ColibriFacility(BaseRoboticObservationFacility):
@@ -35,6 +60,7 @@ class ColibriFacility(BaseRoboticObservationFacility):
         AltitudeConstraint(30 * u.deg, 90 * u.deg),
         AirmassConstraint(2),
         MoonSeparationConstraint(min=20 * u.deg),
+        AtNightConstraint.twilight_astronomical(),
     ]
 
     def data_products(self, observation_id, product_id=None):
@@ -54,12 +80,14 @@ class ColibriFacility(BaseRoboticObservationFacility):
 
     def submit_observation(self, observation_payload):
         print("PAYLOAD:")
-        print(observation_payload)
+        logger.info(observation_payload)
+        logger.info('This is an info message')
         print()
         return [1]
 
     def validate_observation(self, observation_payload):
-        print("VALIDATING ...")
+        logger.info("VALIDATING ...")
+        logger.info("-------------- TOTO -------------------")
         pass
 
     def get_observing_sites(self):

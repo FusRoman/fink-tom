@@ -85,41 +85,6 @@ def simu_night_time_interval(ref_obs, ref_date: str):
         time_ranges = Time([date_start_night, date_end_night])
     return time_ranges
 
-
-def target_observability(target: Target) -> bool:
-    """
-    Return true of the target are observable at the observatory
-
-    Parameters
-    ----------
-    observatory : Observer
-        the observatory to test
-    target : Target
-        the target to test
-
-    Returns
-    -------
-    bool
-        if True, the target is observable to the observatory
-    """
-    targets = FixedTarget(coord=SkyCoord(ra=target.ra * u.deg, dec=target.dec * u.deg))
-
-    def observability_test(observatory):
-        time_range = simu_night_time_interval(
-            observatory, Time(target.epoch, format="jd")
-        )
-        return is_observable(
-            observatory.gvom_constraints,
-            observatory,
-            targets,
-            time_range=time_range,
-            time_grid_resolution=1 * u.hour,
-        )
-
-    is_observable_colibri = observability_test(ColibriFacility.observatory)
-    return is_observable_colibri
-
-
 def return_time_constraints(
     observatory: Observer,
     target: FixedTarget,
@@ -212,7 +177,9 @@ def start(target, target_list):
 
     if is_observable_in_gvom:
         public_group, _ = Group.objects.get_or_create(name="Public")
-        target.save()
+        target.save(extras={
+            "triggerTimeUTC": Time(target.epoch, format="jd").iso
+        })
         target_list.targets.add(target)
         assign_perm("tom_targets.view_target", public_group, target)
 
