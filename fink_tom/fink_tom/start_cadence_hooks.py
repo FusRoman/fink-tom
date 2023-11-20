@@ -85,6 +85,7 @@ def simu_night_time_interval(ref_obs, ref_date: str):
         time_ranges = Time([date_start_night, date_end_night])
     return time_ranges
 
+
 def return_time_constraints(
     observatory: Observer,
     target: FixedTarget,
@@ -118,16 +119,17 @@ def return_time_constraints(
         return np.array([]), 0.0
 
 
-def gvom_target_observability(target, target_trig_time):
-    gvom_network = [
-        ColibriFacility(),
-        XinglongFacility(),
-        JilinFacility(),
-        OHPFacility(),
-        ORMFacility(),
-        MaidanakFacility(),
-    ]
+gvom_network = [
+    ColibriFacility(),
+    XinglongFacility(),
+    JilinFacility(),
+    OHPFacility(),
+    ORMFacility(),
+    MaidanakFacility(),
+]
 
+
+def gvom_target_observability(target, target_trig_time):
     obs_res = [
         [
             obs.name,
@@ -178,7 +180,8 @@ def start(target, target_list):
     if is_observable_in_gvom:
         public_group, _ = Group.objects.get_or_create(name="Public")
         target.save(extras={
-            "triggerTimeUTC": Time(target.epoch, format="jd").iso
+            "triggerTimeUTC": Time(target.epoch, format="jd").iso,
+            "fink broker link": f"https://fink-portal.org/{target.name}"
         })
         target_list.targets.add(target)
         assign_perm("tom_targets.view_target", public_group, target)

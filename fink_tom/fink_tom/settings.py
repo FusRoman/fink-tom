@@ -60,7 +60,8 @@ INSTALLED_APPS = [
     'tom_observations',
     'tom_dataproducts',
     'tom_alertstreams',
-    'tom_registration'
+    'tom_registration',
+    'customplot'
 ]
 
 SITE_ID = 1
