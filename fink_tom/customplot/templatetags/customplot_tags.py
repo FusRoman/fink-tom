@@ -16,7 +16,6 @@ from fink_tom.start_cadence_hooks import is_target_observable, gvom_network
 
 from tom_targets.models import Target
 
-
 register = template.Library()
 
 def return_time_constraints(
@@ -143,80 +142,4 @@ def gvom_observability(context, fast_render=False, width=600, height=400, backgr
             )
     # Add plot to the template context
     return {'observability_graph': observability_graph}
-
-
-    # request = context['request']
-    # plan_form = TargetVisibilityForm()
-    # observability_graph = ''
-
-    # if all(request.GET.get(x) for x in ['start_time', 'end_time']) or fast_render:
-    #     plan_form = TargetVisibilityForm({
-    #             'start_time': request.GET.get('start_time', datetime.utcnow()),
-    #             'end_time': request.GET.get('end_time', datetime.utcnow() + timedelta(days=1)),
-    #             'airmass': request.GET.get('airmass', 2.5),
-    #             'target': context['object']
-    #         })
-        
-    #     if plan_form.is_valid():
-
-    #         start_time = plan_form.cleaned_data['start_time']
-    #         end_time = plan_form.cleaned_data['end_time']
-    #         target = plan_form.cleaned_data['target']
-
-            # pdf_obs = is_target_observable(target, start_time, end_time)
-
-
-    layout = go.Layout(
-        yaxis=dict(autorange="reversed"),
-        width=600,
-        height=400,
-        paper_bgcolor=None,
-        plot_bgcolor=None,
-    )
-
-    # t = pd.concat(
-    #     [
-    #         pd.DataFrame(
-    #             [
-    #                 dict(
-    #                     Observatory=obs.name,
-    #                     Start=Time(time, format="jd").iso,
-    #                     Finish=(Time(time, format="jd") + (10 * u.minute)).iso,
-    #                 )
-    #                 for time in pdf_obs[pdf_obs["observatory"] == obs.name][
-    #                     "observable_time"
-    #                 ].values[0]
-    #             ]
-    #         )
-    #         for obs in gvom_network
-    #     ]
-    # )
-
-    # fig = px.timeline(
-    #     t,
-    #     x_start="Start",
-    #     x_end="Finish",
-    #     y="Observatory",
-    #     color="Observatory",
-    #     title=f"{target.name} Observability by gvom network",
-    # )
-    plot_data = [
-        go.Scatter(
-            x=[0, 1], y=[0, 1]
-        )
-    ]
-
-    fig = go.Figure(data=plot_data, layout=layout)
-    fig.update_yaxes(showgrid=True, color=None, showline=True, linecolor=None, mirror=True)
-    fig.update_xaxes(showgrid=True, color=None, showline=True, linecolor=None, mirror=True)
-
-    observability_graph = offline.plot(
-                fig, output_type='div', show_link=False
-            )
-
-    print(observability_graph)
-
-    return {
-        'observability_graph': observability_graph
-    }
 

@@ -265,3 +265,7 @@ pyrightconfig.json
 
 # End of https://www.toptal.com/developers/gitignore/api/django,python
 .secret_key
+
+
+env_file/.env.no_push.fink
+env_file/.env.prod.fink

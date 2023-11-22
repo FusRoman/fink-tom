@@ -7,7 +7,7 @@ services:
       dockerfile: ./docker/Dockerfile.dev
     command: tail -F anything
     volumes:
-      - /home/roman:/home/local
+      - ~:/home/local
     restart: always
     ports:
       - 8000:8000

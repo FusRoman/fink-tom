@@ -21,6 +21,7 @@ from fink_tom.maidanak import MaidanakFacility
 from fink_tom.ohp import OHPFacility
 from fink_tom.orm import ORMFacility
 from fink_tom.xinglong import XinglongFacility
+from fink_tom.slack_bot import post_msg_on_slack
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -160,7 +161,7 @@ def is_target_observable(tom_target):
     return res_pdf
 
 
-def start(target, target_list):
+def start(target: Target, target_list, alert):
     logger.info("start the cadence for the target: {}".format(target))
     pdf_obs = is_target_observable(target)
 
@@ -180,11 +181,12 @@ def start(target, target_list):
     if is_observable_in_gvom:
         public_group, _ = Group.objects.get_or_create(name="Public")
         target.save(extras={
-            "triggerTimeUTC": Time(target.epoch, format="jd").iso,
-            "fink broker link": f"https://fink-portal.org/{target.name}"
+            "triggerTimeUTC": Time(target.epoch, format="jd").iso
         })
         target_list.targets.add(target)
         assign_perm("tom_targets.view_target", public_group, target)
+        post_msg_on_slack(alert)
+
 
         dynamic_cadence = DynamicCadence(
             cadence_strategy="GVOMCadence", created=datetime.datetime.now(), active=True

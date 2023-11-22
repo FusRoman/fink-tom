@@ -1,0 +1,43 @@
+{% load tom_common_extras targets_extras %}
+<dl class="row">
+  {% for target_name in target.names %}
+    {% if forloop.first %}
+      <dt class="col-sm-6">Names</dt>
+      {% with fink_link="https://fink-portal.org/"|add:target_name%}
+      <dd class="col-sm-6"><a href={{ fink_link }}>{{ target_name }}</a></dd>
+      {% endwith %}
+    {% else %}
+      <dt class="col-sm-6">&nbsp;</dt>
+      <dd class="col-sm-6">{{ target_name }}</dd>
+    {% endif %}
+  {% endfor %}
+  {% for key, value in target.as_dict.items %}
+  {% if value and key != 'name' %}
+  <dt class="col-sm-6">{% verbose_name target key %}</dt>
+  <dd class="col-sm-6">{{ value|truncate_number }}</dd>
+  {% endif %}
+  {% if key == 'ra' %}
+    <dt class="col-sm-6">&nbsp;</dt>
+    <dd class="col-sm-6">{{ value|deg_to_sexigesimal:"hms" }}</dd>
+  {% endif%}
+  {% if key == 'dec' %}
+    <dt class="col-sm-6">&nbsp;</dt>
+    <dd class="col-sm-6">{{ value|deg_to_sexigesimal:"dms" }}</dd>
+  {% endif%}
+  {% endfor %}
+</dl>
+<dl class="row">
+{% for key, value in extras.items %}
+  <dt class="col-sm-6">{{ key }}</dt>
+  <dd class="col-sm-6">{{ value }}</dd>
+{% endfor %}
+</dl>
+{% if target.tags %}
+<p>Tags</p>
+<dl class="row">
+{% for key, value in target.tags.items %}
+  <dt class="col-sm-6">{{ key }}</dt>
+  <dd class="col-sm-6">{{ value }}</dd>
+{% endfor %}
+</dl>
+{% endif %}

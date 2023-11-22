@@ -394,6 +394,8 @@ ALERT_STREAMS = [
     }
 ]
 
+SLACK_BOT_TOKEN=os.environ.get("SLACK_BOT_TOKEN")
+
 try:
     from local_settings import * # noqa
 except ImportError:
