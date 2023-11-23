@@ -13,7 +13,7 @@ docker-compose up -d
 ```
 
 make django migration
-don't forget to run migration of there is any modification on the database
+don't forget to run migration if there is any modification on the database
 ```bash
 docker-compose exec web conda run --no-capture-output -n fink_tom_env python manage.py migrate
 ```

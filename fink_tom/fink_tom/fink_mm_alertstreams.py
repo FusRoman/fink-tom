@@ -98,7 +98,7 @@ def ztf_alert_processor(finkmm_stream, topic, alert):
     )
     logger.info("SAVE TARGET")
     try:
-        run_hook("gvom_start_cadence", target=t, target_list=target_list, alert=alert)
+        run_hook("gvom_start_cadence", target=t, target_list=target_list, alert=alert, topic=topic)
     except UniqueViolation:
         logger.error(f"Target {t} already in the database")
     except Exception:
@@ -145,7 +145,7 @@ def mm_alert_processor(finkmm_stream, topic, alert):
         target_list.targets.add(t)
         assign_perm("tom_targets.view_target", public_group, t)
 
-        run_hook("gvom_start_cadence", target=t, target_list=target_list, alert=alert)
+        run_hook("gvom_start_cadence", target=t, target_list=target_list, alert=alert, topic=topic)
     except UniqueViolation:
         logger.error(f"Target {t} already in the database")
     except IntegrityError as ue:

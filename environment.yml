@@ -11,4 +11,6 @@ dependencies:
   - tom_registration
   - git+https://github.com/FusRoman/tom_registration.git@tom_registration#egg=tom_registration # fork of the initial
   # tom_registration plugin,add the new users to the Public group when they are approved.
-  - slackclient
+  - slack_sdk
+  - fink_science
+  - kaleido
